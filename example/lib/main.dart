@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:neeko/main.dart';
+import 'package:video_player/video_player.dart';
 
 void main() {
   runApp(MyApp());
@@ -34,7 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final VideoControllerWrapper videoControllerWrapper = VideoControllerWrapper(
       DataSource.network(
-          'http://vfx.mtime.cn/Video/2019/03/09/mp4/190309153658147087.mp4',
+          beeUri,
           displayName: "displayName"));
 
 //  final VideoControllerWrapper videoControllerWrapper = VideoControllerWrapper(
@@ -43,19 +45,41 @@ class _MyHomePageState extends State<MyHomePage> {
 //          displayName: "displayName"));
 
   @override
+  void initState() {
+    super.initState();
+    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top]);
+  }
+
+  @override
+  void dispose() {
+    SystemChrome.restoreSystemUIOverlays();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
+      ),
       body: NeekoPlayerWidget(
         onSkipPrevious: () {
           print("skip");
           videoControllerWrapper.prepareDataSource(DataSource.network(
-              "http://vfx.mtime.cn/Video/2019/03/12/mp4/190312083533415853.mp4",
-              displayName: "This house is not for sale"));
+              beeUri,
+              displayName: "This house is not for sale",
+              formatHint: VideoFormat.other
+              ),
+          );
         },
         onSkipNext: () {
           videoControllerWrapper.prepareDataSource(DataSource.network(
-              'http://vfx.mtime.cn/Video/2019/03/09/mp4/190309153658147087.mp4',
-              displayName: "displayName"));
+              beeUri,
+              displayName: "displayName",
+              formatHint: VideoFormat.other
+            )
+          );
         },
         videoControllerWrapper: videoControllerWrapper,
         actions: <Widget>[

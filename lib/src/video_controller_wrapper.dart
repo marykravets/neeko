@@ -55,7 +55,7 @@ class VideoControllerWrapper extends ValueNotifier<DataSource> {
       case DataSourceType.network:
         VideoFormat videoFormat;
         if (dataSource.formatHint != null) {
-          videoFormat = _neekoFormatToVideoFormat(_dataSource.formatHint);
+          videoFormat = _dataSource.formatHint;
         }
         newController = VideoPlayerController.network(dataSource.dataSource,
             formatHint: videoFormat);
@@ -66,7 +66,7 @@ class VideoControllerWrapper extends ValueNotifier<DataSource> {
     }
 
     newController.addListener(_videoControllerListener);
-    await newController.initialize();
+
     _controllerPool.add(
         _videoPlayerController); // add the old one into pool then dispose it.
 //    _controllerPool.add(newController);
@@ -81,6 +81,7 @@ class VideoControllerWrapper extends ValueNotifier<DataSource> {
 //        oldController.dispose();
 //      });
 //    }
+    await newController.initialize();
   }
 
   _videoControllerListener() {
@@ -100,26 +101,6 @@ class VideoControllerWrapper extends ValueNotifier<DataSource> {
       }
     }
   }
-
-  VideoFormat _neekoFormatToVideoFormat(NeekoVideoFormat neekoVideoFormat) {
-    VideoFormat format;
-    switch (neekoVideoFormat) {
-      case NeekoVideoFormat.dash:
-        format = VideoFormat.dash;
-        break;
-      case NeekoVideoFormat.hls:
-        format =  VideoFormat.hls;
-        break;
-      case NeekoVideoFormat.ss:
-        format =  VideoFormat.ss;
-        break;
-      case NeekoVideoFormat.other:
-        format =  VideoFormat.other;
-        break;
-    }
-
-    return format;
-  }
 }
 
 class DataSource {
@@ -130,7 +111,7 @@ class DataSource {
   final String subtitle;
   final dynamic id;
   final Map extras;
-  final NeekoVideoFormat formatHint;
+  final VideoFormat formatHint;
 
   DataSource.network(this.dataSource,
       {this.formatHint, this.displayName, this.id, this.extras, this.subtitle})
