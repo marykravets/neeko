@@ -212,7 +212,7 @@ class __FullscreenPlayerState extends State<_FullscreenPlayer> {
                 aspectRatio: widget.aspectRatio,
                 child: Stack(
                   fit: StackFit.expand,
-                  overflow: Overflow.visible,
+                  clipBehavior: Clip.none,
                   children: <Widget>[
                     NeekoPlayer(controllerWrapper: videoControllerWrapper),
                     if (widget.playerOptions.useController)

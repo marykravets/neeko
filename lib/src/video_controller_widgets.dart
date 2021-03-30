@@ -398,22 +398,9 @@ class _TopBarState extends State<TopBar> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               if (title != null)
-                Text(
-                  title,
-                  maxLines: 1,
-                  style:
-                      themeData.textTheme.subhead.copyWith(color: Colors.white),
-                  overflow: TextOverflow.ellipsis,
-                ),
+                _getTitleText(title, themeData),
               if (subtitle != null)
-                Text(
-                  subtitle,
-                  maxLines: 1,
-                  softWrap: true,
-                  style:
-                      themeData.textTheme.body1.copyWith(color: Colors.white),
-                  overflow: TextOverflow.ellipsis,
-                )
+                _getTitleText(subtitle, themeData)
             ],
           ),
           SizedBox(
@@ -421,6 +408,17 @@ class _TopBarState extends State<TopBar> {
           ),
         ],
       ),
+    );
+  }
+
+  Text _getTitleText(String text, ThemeData themeData) {
+    return Text(
+      text,
+      maxLines: 1,
+      softWrap: true,
+      style:
+      themeData.textTheme.bodyText2.copyWith(color: Colors.white),
+      overflow: TextOverflow.ellipsis,
     );
   }
 }
