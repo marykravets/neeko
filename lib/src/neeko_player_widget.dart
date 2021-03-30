@@ -258,7 +258,7 @@ class _NeekoPlayerWidgetState extends State<NeekoPlayerWidget> {
           aspectRatio: widget.aspectRatio,
           child: Stack(
             fit: StackFit.expand,
-            overflow: Overflow.visible,
+            clipBehavior: Clip.none,
             children: <Widget>[
               NeekoPlayer(controllerWrapper: videoControllerWrapper),
               if (widget.playerOptions.useController)

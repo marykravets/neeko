@@ -17,7 +17,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:neeko/main.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoControllerWrapper extends ValueNotifier<DataSource> {
