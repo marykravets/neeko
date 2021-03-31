@@ -166,7 +166,7 @@ class _NeekoPlayerWidgetState extends State<NeekoPlayerWidget> {
     if (controller.value.isPlaying) {
       return;
     }
-    if (controller.value.initialized) {
+    if (controller.value.isInitialized) {
       if (widget.startAt != null) {
         await controller.seekTo(widget.startAt);
       }
