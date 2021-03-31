@@ -114,7 +114,7 @@ class _ProgressBarState extends State<ProgressBar> {
               ),
             ),
       onHorizontalDragStart: (details) {
-        if (!controller.value.initialized) {
+        if (!controller.value.isInitialized) {
           return;
         }
         _controllerWasPlaying = controller.value.isPlaying;
@@ -127,7 +127,7 @@ class _ProgressBarState extends State<ProgressBar> {
         }
       },
       onHorizontalDragUpdate: (DragUpdateDetails details) {
-        if (!controller.value.initialized) {
+        if (!controller.value.isInitialized) {
           return;
         }
         seekToRelativePosition(details.globalPosition);
@@ -146,7 +146,7 @@ class _ProgressBarState extends State<ProgressBar> {
         }
       },
       onTapDown: (TapDownDetails details) {
-        if (!controller.value.initialized) {
+        if (!controller.value.isInitialized) {
           return;
         }
         seekToRelativePosition(details.globalPosition);
@@ -187,7 +187,7 @@ class _ProgressBarPainter extends CustomPainter {
       ),
       backgroundPaint,
     );
-    if (!value.initialized) {
+    if (!value.isInitialized) {
       return;
     }
     double playedPart = 0;

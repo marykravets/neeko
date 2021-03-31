@@ -85,7 +85,7 @@ class VideoControllerWrapper extends ValueNotifier<DataSource> {
 
   _videoControllerListener() {
     if (_videoPlayerController == null ||
-        !_videoPlayerController.value.initialized) {
+        !_videoPlayerController.value.isInitialized) {
       return;
     }
 

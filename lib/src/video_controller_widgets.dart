@@ -58,6 +58,7 @@ class _CenterControllerActionButtonsState
       _controllerWrapper = controllerWrapper;
 
   AnimationController _animController;
+  static const iconSize = 60.0;
 
   @override
   void initState() {
@@ -114,8 +115,6 @@ class _CenterControllerActionButtonsState
       return Container();
     }
 
-    final iconSize = 60.0;
-
     _removeVideoControllerListener();
     _attachListenerToController();
 
@@ -136,13 +135,8 @@ class _CenterControllerActionButtonsState
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 if (!widget.isLive)
-                  IconButton(
-                    icon: Icon(
-                      Icons.skip_previous,
-                    ),
-                    color: Colors.white,
-                    onPressed: widget.onSkipPrevious,
-                    iconSize: iconSize,
+                  _getIconButton(
+                    Icons.skip_previous,
                   ),
                 InkWell(
                   borderRadius: BorderRadius.circular(50.0),
@@ -155,13 +149,8 @@ class _CenterControllerActionButtonsState
                   ),
                 ),
                 if (!widget.isLive)
-                  IconButton(
-                    icon: Icon(
-                      Icons.skip_next,
-                    ),
-                    onPressed: widget.onSkipNext,
-                    color: Colors.white,
-                    iconSize: iconSize,
+                  _getIconButton(
+                    Icons.skip_next,
                   ),
               ],
             ),
@@ -171,8 +160,19 @@ class _CenterControllerActionButtonsState
     }
   }
 
+  IconButton _getIconButton(IconData icon) {
+    return IconButton(
+      icon: Icon(
+        icon,
+      ),
+      onPressed: widget.onSkipNext,
+      color: Colors.white,
+      iconSize: iconSize,
+    );
+  }
+
   _play() async {
-    if (!controller.value.initialized) {
+    if (!controller.value.isInitialized) {
       return;
     }
 
@@ -554,7 +554,7 @@ class _BottomBarState extends State<BottomBar> {
               color: Colors.white,
             ),
             onPressed: () {
-              if (controller == null || !controller.value.initialized) {
+              if (controller == null || !controller.value.isInitialized) {
                 return;
               }
               if (widget.isFullscreen && widget.onExitFullscreen != null) {
@@ -709,7 +709,7 @@ class _LiveBottomBarState extends State<LiveBottomBar> {
               color: Colors.white,
             ),
             onPressed: () {
-              if (controller == null || !controller.value.initialized) {
+              if (controller == null || !controller.value.isInitialized) {
                 return;
               }
 
