@@ -17,17 +17,17 @@ import 'package:neeko/src/video_controller_wrapper.dart';
 import 'package:video_player/video_player.dart';
 
 class ProgressBar extends StatefulWidget {
-  final VideoControllerWrapper controllerWrapper;
-  final Color playedColor;
-  final Color bufferedColor;
-  final Color handleColor;
-  final Color backgroundColor;
+  final VideoControllerWrapper? controllerWrapper;
+  final Color? playedColor;
+  final Color? bufferedColor;
+  final Color? handleColor;
+  final Color? backgroundColor;
 
-  final Function onDragStart;
-  final Function onDragEnd;
-  final Function onDragUpdate;
+  final Function? onDragStart;
+  final Function? onDragEnd;
+  final Function? onDragUpdate;
 
-  final ValueNotifier<bool> showControllers;
+  final ValueNotifier<bool>? showControllers;
 
   ProgressBar(this.controllerWrapper,
       {this.playedColor,
@@ -44,9 +44,9 @@ class ProgressBar extends StatefulWidget {
 }
 
 class _ProgressBarState extends State<ProgressBar> {
-  VoidCallback listener;
+  late VoidCallback listener;
 
-  VideoPlayerController get controller => widget.controllerWrapper.controller;
+  VideoPlayerController? get controller => widget.controllerWrapper!.controller;
   bool _controllerWasPlaying = false;
 
   @override
@@ -57,7 +57,7 @@ class _ProgressBarState extends State<ProgressBar> {
         setState(() {});
       }
     };
-    widget.controllerWrapper.addListener(() {
+    widget.controllerWrapper!.addListener(() {
       controller?.addListener(listener);
     });
     controller?.addListener(listener);
@@ -79,11 +79,11 @@ class _ProgressBarState extends State<ProgressBar> {
     }
 
     void seekToRelativePosition(Offset globalPosition) {
-      final RenderBox box = context.findRenderObject();
+      final RenderBox box = context.findRenderObject() as RenderBox;
       final Offset tapPos = box.globalToLocal(globalPosition);
       final double relative = tapPos.dx / box.size.width;
-      final Duration position = controller.value.duration * relative;
-      controller.seekTo(position);
+      final Duration position = controller!.value.duration * relative;
+      controller!.seekTo(position);
     }
 
     final playedPaint = Paint()
@@ -97,7 +97,7 @@ class _ProgressBarState extends State<ProgressBar> {
     final backgroundPaint = Paint()
       ..color = widget.backgroundColor ?? const Color.fromRGBO(10, 10, 10, 0.5);
     return GestureDetector(
-      child: controller.value.hasError
+      child: controller!.value.hasError
           ? Container()
           : Container(
               height: 60,
@@ -105,7 +105,7 @@ class _ProgressBarState extends State<ProgressBar> {
               color: Colors.transparent,
               child: CustomPaint(
                 painter: _ProgressBarPainter(
-                    value: controller.value,
+                    value: controller!.value,
                     playedPaint: playedPaint,
                     bufferedPaint: bufferedPaint,
                     handlePaint: handlePaint,
@@ -114,39 +114,39 @@ class _ProgressBarState extends State<ProgressBar> {
               ),
             ),
       onHorizontalDragStart: (details) {
-        if (!controller.value.isInitialized) {
+        if (!controller!.value.isInitialized) {
           return;
         }
-        _controllerWasPlaying = controller.value.isPlaying;
+        _controllerWasPlaying = controller!.value.isPlaying;
         if (_controllerWasPlaying) {
-          controller.pause();
+          controller!.pause();
         }
 
         if (widget.onDragStart != null) {
-          widget.onDragStart();
+          widget.onDragStart!();
         }
       },
       onHorizontalDragUpdate: (DragUpdateDetails details) {
-        if (!controller.value.isInitialized) {
+        if (!controller!.value.isInitialized) {
           return;
         }
         seekToRelativePosition(details.globalPosition);
 
         if (widget.onDragUpdate != null) {
-          widget.onDragUpdate();
+          widget.onDragUpdate!();
         }
       },
       onHorizontalDragEnd: (DragEndDetails details) {
         if (_controllerWasPlaying) {
-          controller.play();
+          controller!.play();
         }
 
         if (widget.onDragEnd != null) {
-          widget.onDragEnd();
+          widget.onDragEnd!();
         }
       },
       onTapDown: (TapDownDetails details) {
-        if (!controller.value.isInitialized) {
+        if (!controller!.value.isInitialized) {
           return;
         }
         seekToRelativePosition(details.globalPosition);
@@ -156,14 +156,14 @@ class _ProgressBarState extends State<ProgressBar> {
 }
 
 class _ProgressBarPainter extends CustomPainter {
-  final VideoPlayerValue value;
+  final VideoPlayerValue? value;
 
-  final bool drawHandle;
+  final bool? drawHandle;
 
-  final Paint playedPaint;
-  final Paint bufferedPaint;
-  final Paint handlePaint;
-  final Paint backgroundPaint;
+  final Paint? playedPaint;
+  final Paint? bufferedPaint;
+  final Paint? handlePaint;
+  final Paint? backgroundPaint;
 
   _ProgressBarPainter(
       {this.playedPaint,
@@ -185,28 +185,28 @@ class _ProgressBarPainter extends CustomPainter {
         ),
         Radius.circular(0.0),
       ),
-      backgroundPaint,
+      backgroundPaint!,
     );
-    if (!value.isInitialized) {
+    if (!value!.isInitialized) {
       return;
     }
     double playedPart = 0;
-    if (value.duration != null) {
+    if (value!.duration != null) {
       double playedPartPercent =
-          value.position.inMilliseconds / value.duration.inMilliseconds;
+          value!.position.inMilliseconds / value!.duration.inMilliseconds;
       if (playedPartPercent.isNaN) playedPartPercent = 0;
       playedPart =
           playedPartPercent > 1 ? size.width : playedPartPercent * size.width;
     }
 
     double totalBuffered = 0;
-    value.buffered?.forEach((durationRange) {
+    value!.buffered.forEach((durationRange) {
       totalBuffered = totalBuffered + durationRange.end.inMilliseconds;
     });
 
     double bufferedPercent = 0;
-    if (value.duration != null) {
-      bufferedPercent = totalBuffered / value.duration.inMilliseconds;
+    if (value!.duration != null) {
+      bufferedPercent = totalBuffered / value!.duration.inMilliseconds;
       if (bufferedPercent.isNaN) bufferedPercent = 0;
     }
 
@@ -219,7 +219,7 @@ class _ProgressBarPainter extends CustomPainter {
         ),
         Radius.circular(4.0),
       ),
-      bufferedPaint,
+      bufferedPaint!,
     );
     canvas.drawRRect(
       RRect.fromRectAndRadius(
@@ -229,13 +229,13 @@ class _ProgressBarPainter extends CustomPainter {
         ),
         Radius.circular(4.0),
       ),
-      playedPaint,
+      playedPaint!,
     );
-    if (drawHandle) {
+    if (drawHandle!) {
       canvas.drawCircle(
         Offset(playedPart, size.height / 2 + height / 2),
         height * 3,
-        handlePaint,
+        handlePaint!,
       );
     }
   }

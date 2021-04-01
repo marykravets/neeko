@@ -26,21 +26,21 @@ import 'video_controller_wrapper.dart';
 
 ///Build [_FullscreenPlayer]
 Widget fullScreenRoutePageBuilder(
-    {@required BuildContext context,
-    @required VideoControllerWrapper videoControllerWrapper,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
+    {required BuildContext context,
+    required VideoControllerWrapper videoControllerWrapper,
+    Animation<double>? animation,
+    Animation<double>? secondaryAnimation,
     double aspectRatio = 16 / 9,
-    double width,
-    Duration controllerTimeout,
-    Widget bufferIndicator,
-    Color liveUIColor,
-    List<Widget> actions,
-    Duration startAt,
-    Function onSkipPrevious,
-    Function onSkipNext,
-    NeekoPlayerOptions playerOptions,
-    String tag}) {
+    double? width,
+    Duration? controllerTimeout,
+    Widget? bufferIndicator,
+    Color? liveUIColor,
+    List<Widget>? actions,
+    Duration? startAt,
+    Function? onSkipPrevious,
+    Function? onSkipNext,
+    NeekoPlayerOptions? playerOptions,
+    String? tag}) {
   return _FullscreenPlayer(
     videoControllerWrapper: videoControllerWrapper,
     aspectRatio: aspectRatio,
@@ -73,49 +73,49 @@ Widget fullScreenRoutePageBuilder(
 //}
 
 class _FullscreenPlayer extends StatefulWidget {
-  final VideoControllerWrapper videoControllerWrapper;
+  final VideoControllerWrapper? videoControllerWrapper;
 
-  final NeekoPlayerOptions playerOptions;
+  final NeekoPlayerOptions? playerOptions;
 
   /// Defines the width of the player.
   /// Default = Devices's Width
-  final double width;
+  final double? width;
 
   ///The duration for which controls in the player will be visible.
   ///default 3 seconds
-  final Duration controllerTimeout;
+  final Duration? controllerTimeout;
 
   /// Overrides the default buffering indicator for the player.
-  final Widget bufferIndicator;
+  final Widget? bufferIndicator;
 
-  final Color liveUIColor;
+  final Color? liveUIColor;
 
   /// Defines the aspect ratio to be assigned to the player. This property along with [width] calculates the player size.
   /// Default = 16/9
-  final double aspectRatio;
+  final double? aspectRatio;
 
   /// Adds custom top bar widgets
-  final List<Widget> actions;
+  final List<Widget>? actions;
 
   /// Video starts playing from the duration provided.
-  final Duration startAt;
+  final Duration? startAt;
 
-  final bool inFullScreen;
+  final bool? inFullScreen;
 
-  final Function onPortraitBackTap;
+  final Function? onPortraitBackTap;
 
-  final Function onSkipPrevious;
-  final Function onSkipNext;
+  final Function? onSkipPrevious;
+  final Function? onSkipNext;
 
-  final Color progressBarPlayedColor;
-  final Color progressBarBufferedColor;
-  final Color progressBarHandleColor;
-  final Color progressBarBackgroundColor;
+  final Color? progressBarPlayedColor;
+  final Color? progressBarBufferedColor;
+  final Color? progressBarHandleColor;
+  final Color? progressBarBackgroundColor;
 
-  final String tag;
+  final String? tag;
 
   const _FullscreenPlayer(
-      {Key key,
+      {Key? key,
       this.videoControllerWrapper,
       this.playerOptions,
       this.width,
@@ -141,29 +141,29 @@ class _FullscreenPlayer extends StatefulWidget {
 }
 
 class __FullscreenPlayerState extends State<_FullscreenPlayer> {
-  VideoPlayerController get controller =>
-      widget.videoControllerWrapper.controller;
+  VideoPlayerController? get controller =>
+      widget.videoControllerWrapper!.controller;
 
   final _showControllers = ValueNotifier<bool>(false);
 
-  Timer _timer;
+  Timer? _timer;
 
-  VideoControllerWrapper get videoControllerWrapper =>
+  VideoControllerWrapper? get videoControllerWrapper =>
       widget.videoControllerWrapper;
 
   @override
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIOverlays(
-        widget.playerOptions.enabledSystemUIOverlaysWhenEnterLandscape);
+        widget.playerOptions!.enabledSystemUIOverlaysWhenEnterLandscape);
     SystemChrome.setPreferredOrientations(
-        widget.playerOptions.preferredOrientationsWhenEnterLandscape);
+        widget.playerOptions!.preferredOrientationsWhenEnterLandscape);
 
     _showControllers.addListener(() {
       _timer?.cancel();
       if (_showControllers.value) {
         _timer = Timer(
-          widget.controllerTimeout,
+          widget.controllerTimeout!,
           () => _showControllers.value = false,
         );
       }
@@ -177,8 +177,8 @@ class __FullscreenPlayerState extends State<_FullscreenPlayer> {
       }
     });
 
-    widget.videoControllerWrapper.addListener(() {
-      controller.addListener(() {
+    widget.videoControllerWrapper!.addListener(() {
+      controller!.addListener(() {
         if (mounted) {
           setState(() {
 //          _autoPlay();
@@ -192,9 +192,9 @@ class __FullscreenPlayerState extends State<_FullscreenPlayer> {
   void dispose() {
     _timer?.cancel();
     SystemChrome.setEnabledSystemUIOverlays(
-        widget.playerOptions.enabledSystemUIOverlaysWhenExitLandscape);
+        widget.playerOptions!.enabledSystemUIOverlaysWhenExitLandscape);
     SystemChrome.setPreferredOrientations(
-        widget.playerOptions.preferredOrientationsWhenExitLandscape);
+        widget.playerOptions!.preferredOrientationsWhenExitLandscape);
     super.dispose();
   }
 
@@ -205,23 +205,23 @@ class __FullscreenPlayerState extends State<_FullscreenPlayer> {
       child: SafeArea(
         child: Center(
           child: Hero(
-            tag: this.widget.tag,
+            tag: this.widget.tag!,
             child: Container(
               width: widget.width ?? MediaQuery.of(context).size.width,
               child: AspectRatio(
-                aspectRatio: widget.aspectRatio,
+                aspectRatio: widget.aspectRatio!,
                 child: Stack(
                   fit: StackFit.expand,
                   clipBehavior: Clip.none,
                   children: <Widget>[
                     NeekoPlayer(controllerWrapper: videoControllerWrapper),
-                    if (widget.playerOptions.useController)
+                    if (widget.playerOptions!.useController)
                       TouchShutter(
                         videoControllerWrapper,
                         showControllers: _showControllers,
-                        enableDragSeek: widget.playerOptions.enableDragSeek,
+                        enableDragSeek: widget.playerOptions!.enableDragSeek,
                       ),
-                    if (widget.playerOptions.useController)
+                    if (widget.playerOptions!.useController)
                       Center(
                         child: CenterControllerActionButtons(
                           videoControllerWrapper,
@@ -239,7 +239,7 @@ class __FullscreenPlayerState extends State<_FullscreenPlayer> {
                               ),
                         ),
                       ),
-                    if (widget.playerOptions.useController)
+                    if (widget.playerOptions!.useController)
                       Positioned(
                           left: 0,
                           right: 0,
@@ -252,12 +252,12 @@ class __FullscreenPlayerState extends State<_FullscreenPlayer> {
                             isFullscreen: true,
                             onLandscapeBackTap: _pop,
                           )),
-                    if (widget.playerOptions.useController)
+                    if (widget.playerOptions!.useController)
                       Positioned(
                         bottom: 0,
                         left: 0,
                         right: 0,
-                        child: widget.playerOptions.isLive
+                        child: widget.playerOptions!.isLive
                             ? LiveBottomBar(
                                 videoControllerWrapper,
                                 aspectRatio: widget.aspectRatio,

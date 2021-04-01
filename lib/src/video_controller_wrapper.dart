@@ -20,20 +20,20 @@ import 'package:flutter/foundation.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoControllerWrapper extends ValueNotifier<DataSource> {
-  VideoPlayerController get controller => _videoPlayerController;
+  VideoPlayerController? get controller => _videoPlayerController;
 
-  List<VideoPlayerController> _controllerPool = [];
+  List<VideoPlayerController?> _controllerPool = [];
 
-  VideoPlayerController _videoPlayerController;
+  VideoPlayerController? _videoPlayerController;
 
-  DataSource _dataSource;
+  DataSource? _dataSource;
 
   VideoControllerWrapper(DataSource value) : super(value) {
     prepareDataSource(value);
   }
 
   ///Get current [dataSource]
-  DataSource get dataSource => _dataSource;
+  DataSource? get dataSource => _dataSource;
 
   ///Prepare your [dataSource] and initialize [_videoPlayerController].
   ///Old controllers will be disposed once the one is under buffering or playing.
@@ -45,16 +45,16 @@ class VideoControllerWrapper extends ValueNotifier<DataSource> {
 //      await _controllerPool[0].pause();
 //    }
 
-    VideoPlayerController newController;
+    VideoPlayerController? newController;
     switch (dataSource.dataSourceType) {
       case DataSourceType.asset:
         newController = VideoPlayerController.asset(dataSource.dataSource,
             package: dataSource.package);
         break;
       case DataSourceType.network:
-        VideoFormat videoFormat;
+        VideoFormat? videoFormat;
         if (dataSource.formatHint != null) {
-          videoFormat = _dataSource.formatHint;
+          videoFormat = _dataSource!.formatHint;
         }
         newController = VideoPlayerController.network(dataSource.dataSource,
             formatHint: videoFormat);
@@ -85,14 +85,14 @@ class VideoControllerWrapper extends ValueNotifier<DataSource> {
 
   _videoControllerListener() {
     if (_videoPlayerController == null ||
-        !_videoPlayerController.value.isInitialized) {
+        !_videoPlayerController!.value.isInitialized) {
       return;
     }
 
-    if (_videoPlayerController.value.isPlaying) {
-      if (_videoPlayerController.value.duration.inSeconds <= 1 ||
-          _videoPlayerController.value.position.inSeconds > 1) {
-        _videoPlayerController.removeListener(_videoControllerListener);
+    if (_videoPlayerController!.value.isPlaying) {
+      if (_videoPlayerController!.value.duration.inSeconds <= 1 ||
+          _videoPlayerController!.value.position.inSeconds > 1) {
+        _videoPlayerController!.removeListener(_videoControllerListener);
         _controllerPool.forEach((controller) {
           controller?.dispose();
         });
@@ -105,12 +105,12 @@ class VideoControllerWrapper extends ValueNotifier<DataSource> {
 class DataSource {
   final String dataSource;
   final DataSourceType dataSourceType;
-  final String package;
-  final String displayName;
-  final String subtitle;
+  final String? package;
+  final String? displayName;
+  final String? subtitle;
   final dynamic id;
-  final Map extras;
-  final VideoFormat formatHint;
+  final Map? extras;
+  final VideoFormat? formatHint;
 
   DataSource.network(this.dataSource,
       {this.formatHint, this.displayName, this.id, this.extras, this.subtitle})

@@ -33,14 +33,14 @@ class NeekoPlayerWidget extends StatefulWidget {
 
   /// Defines the width of the player.
   /// Default = Devices's Width
-  final double width;
+  final double? width;
 
   ///The duration for which controls in the player will be visible.
   ///default 3 seconds
   final Duration controllerTimeout;
 
   /// Overrides the default buffering indicator for the player.
-  final Widget bufferIndicator;
+  final Widget? bufferIndicator;
 
   final Color liveUIColor;
 
@@ -49,7 +49,7 @@ class NeekoPlayerWidget extends StatefulWidget {
   final double aspectRatio;
 
   /// Adds custom top bar widgets
-  final List<Widget> actions;
+  final List<Widget>? actions;
 
   /// Video starts playing from the duration provided.
   final Duration startAt;
@@ -57,25 +57,25 @@ class NeekoPlayerWidget extends StatefulWidget {
   final bool inFullScreen;
 
   /// Callback of back-button's onTap event  when the top controller is portrait
-  final Function onPortraitBackTap;
+  final Function? onPortraitBackTap;
 
   /// When the skip previous button tapped
-  final Function onSkipPrevious;
+  final Function? onSkipPrevious;
 
   /// When the skip previous button tapped
-  final Function onSkipNext;
+  final Function? onSkipNext;
 
-  final Color progressBarPlayedColor;
+  final Color? progressBarPlayedColor;
   final Color progressBarBufferedColor;
-  final Color progressBarHandleColor;
+  final Color? progressBarHandleColor;
   final Color progressBarBackgroundColor;
 
   /// Allow developers to indicate a custom tag (which is linked with its corresponding fullscreen)
   final String tag;
 
   NeekoPlayerWidget(
-      {Key key,
-      @required this.videoControllerWrapper,
+      {Key? key,
+      required this.videoControllerWrapper,
       this.playerOptions = const NeekoPlayerOptions(),
       this.controllerTimeout = const Duration(seconds: 3),
       this.bufferIndicator,
@@ -104,9 +104,9 @@ class NeekoPlayerWidget extends StatefulWidget {
 class _NeekoPlayerWidgetState extends State<NeekoPlayerWidget> {
   final _showControllers = ValueNotifier<bool>(false);
 
-  Timer _timer;
+  Timer? _timer;
 
-  VideoPlayerController get controller =>
+  VideoPlayerController? get controller =>
       widget.videoControllerWrapper.controller;
 
   VideoControllerWrapper get videoControllerWrapper =>
@@ -163,14 +163,14 @@ class _NeekoPlayerWidgetState extends State<NeekoPlayerWidget> {
       return;
     }
 
-    if (controller.value.isPlaying) {
+    if (controller!.value.isPlaying) {
       return;
     }
-    if (controller.value.isInitialized) {
+    if (controller!.value.isInitialized) {
       if (widget.startAt != null) {
-        await controller.seekTo(widget.startAt);
+        await controller!.seekTo(widget.startAt);
       }
-      controller.play();
+      controller!.play();
     }
   }
 
@@ -182,7 +182,7 @@ class _NeekoPlayerWidgetState extends State<NeekoPlayerWidget> {
 
 //    _showControllers.dispose();
     controller?.dispose();
-    videoControllerWrapper?.dispose();
+    videoControllerWrapper.dispose();
     _timer?.cancel();
     super.dispose();
   }
