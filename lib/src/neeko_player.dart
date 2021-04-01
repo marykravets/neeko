@@ -19,9 +19,9 @@ import 'package:video_player/video_player.dart';
 import 'video_controller_wrapper.dart';
 
 class NeekoPlayer extends StatefulWidget {
-  final VideoControllerWrapper controllerWrapper;
+  final VideoControllerWrapper? controllerWrapper;
 
-  const NeekoPlayer({Key key, this.controllerWrapper}) : super(key: key);
+  const NeekoPlayer({Key? key, this.controllerWrapper}) : super(key: key);
 
   @override
   _NeekoPlayerState createState() => _NeekoPlayerState();
@@ -35,20 +35,20 @@ class _NeekoPlayerState extends State<NeekoPlayer> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return widget.controllerWrapper.controller == null
+    return widget.controllerWrapper!.controller == null
         ? Container()
-        : VideoPlayer(widget.controllerWrapper.controller);
+        : VideoPlayer(widget.controllerWrapper!.controller!);
   }
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance!.addObserver(this);
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
+    WidgetsBinding.instance!.removeObserver(this);
     super.dispose();
   }
 }

@@ -24,15 +24,15 @@ import 'progress_bar.dart';
 import 'video_controller_wrapper.dart';
 
 class CenterControllerActionButtons extends StatefulWidget {
-  final VideoControllerWrapper controllerWrapper;
-  final ValueNotifier<bool> showControllers;
-  final Widget bufferIndicator;
+  final VideoControllerWrapper? controllerWrapper;
+  final ValueNotifier<bool>? showControllers;
+  final Widget? bufferIndicator;
   final bool isLive;
-  final Function onSkipPrevious;
-  final Function onSkipNext;
+  final Function? onSkipPrevious;
+  final Function? onSkipNext;
 
   const CenterControllerActionButtons(this.controllerWrapper,
-      {Key key,
+      {Key? key,
       this.showControllers,
       this.bufferIndicator,
       this.onSkipPrevious,
@@ -50,21 +50,21 @@ class _CenterControllerActionButtonsState
     with SingleTickerProviderStateMixin {
   bool _isPlaying = false;
 
-  VideoControllerWrapper _controllerWrapper;
+  VideoControllerWrapper? _controllerWrapper;
 
-  VideoPlayerController get controller => _controllerWrapper.controller;
+  VideoPlayerController? get controller => _controllerWrapper!.controller;
 
   set controllerWrapper(VideoControllerWrapper controllerWrapper) =>
       _controllerWrapper = controllerWrapper;
 
-  AnimationController _animController;
+  late AnimationController _animController;
   static const iconSize = 60.0;
 
   @override
   void initState() {
     super.initState();
     _controllerWrapper = widget.controllerWrapper;
-    _controllerWrapper.addListener(() {
+    _controllerWrapper!.addListener(() {
       _attachListenerToController();
     });
     _animController = AnimationController(
@@ -72,7 +72,7 @@ class _CenterControllerActionButtonsState
       value: 0,
       duration: Duration(milliseconds: 300),
     );
-    widget.showControllers.addListener(() {
+    widget.showControllers!.addListener(() {
       if (mounted) setState(() {});
     });
   }
@@ -93,10 +93,10 @@ class _CenterControllerActionButtonsState
     }
 
     setState(() {
-      _isPlaying = controller.value.isPlaying;
+      _isPlaying = controller!.value.isPlaying;
     });
 
-    if (controller.value.isPlaying) {
+    if (controller!.value.isPlaying) {
       _animController.forward();
     } else {
       _animController.reverse();
@@ -111,18 +111,18 @@ class _CenterControllerActionButtonsState
 
   @override
   Widget build(BuildContext context) {
-    if (_controllerWrapper.controller == null) {
+    if (_controllerWrapper!.controller == null) {
       return Container();
     }
 
     _removeVideoControllerListener();
     _attachListenerToController();
 
-    if (controller.value.isBuffering) {
-      return widget.bufferIndicator;
+    if (controller!.value.isBuffering) {
+      return widget.bufferIndicator!;
     } else {
       return Visibility(
-        visible: widget.showControllers.value || !controller.value.isPlaying,
+        visible: widget.showControllers!.value || !controller!.value.isPlaying,
         child: AnimatedContainer(
           duration: Duration(milliseconds: 300),
           decoration: BoxDecoration(
@@ -165,28 +165,28 @@ class _CenterControllerActionButtonsState
       icon: Icon(
         icon,
       ),
-      onPressed: widget.onSkipNext,
+      onPressed: widget.onSkipNext as void Function()?,
       color: Colors.white,
       iconSize: iconSize,
     );
   }
 
   _play() async {
-    if (!controller.value.isInitialized) {
+    if (!controller!.value.isInitialized) {
       return;
     }
 
     if (_isPlaying) {
-      controller.pause();
+      controller!.pause();
     } else {
-      if (controller.value.position == null) {
-        controller.play();
-      } else if (controller.value.position.inMilliseconds >=
-          controller.value.duration.inMilliseconds) {
-        await controller.seekTo(Duration(seconds: 0));
-        await controller.play();
+      if (controller!.value.position == null) {
+        controller!.play();
+      } else if (controller!.value.position.inMilliseconds >=
+          controller!.value.duration.inMilliseconds) {
+        await controller!.seekTo(Duration(seconds: 0));
+        await controller!.play();
       } else {
-        controller.play();
+        controller!.play();
       }
     }
 
@@ -195,12 +195,12 @@ class _CenterControllerActionButtonsState
 }
 
 class TouchShutter extends StatefulWidget {
-  final VideoControllerWrapper controllerWrapper;
-  final ValueNotifier<bool> showControllers;
-  final bool enableDragSeek;
+  final VideoControllerWrapper? controllerWrapper;
+  final ValueNotifier<bool>? showControllers;
+  final bool? enableDragSeek;
 
   const TouchShutter(this.controllerWrapper,
-      {Key key, this.showControllers, this.enableDragSeek})
+      {Key? key, this.showControllers, this.enableDragSeek})
       : super(key: key);
 
   @override
@@ -216,12 +216,12 @@ class _TouchShutterState extends State<TouchShutter> {
 
   bool _dragging = false;
 
-  VideoPlayerController get controller => widget.controllerWrapper.controller;
+  VideoPlayerController? get controller => widget.controllerWrapper!.controller;
 
   @override
   void initState() {
     super.initState();
-    widget.showControllers.addListener(() {
+    widget.showControllers!.addListener(() {
       if (mounted) setState(() {});
     });
   }
@@ -232,10 +232,10 @@ class _TouchShutterState extends State<TouchShutter> {
       return Container();
     }
 
-    return widget.enableDragSeek
+    return widget.enableDragSeek!
         ? GestureDetector(
             onTap: () =>
-                widget.showControllers.value = !widget.showControllers.value,
+                widget.showControllers!.value = !widget.showControllers!.value,
             onHorizontalDragStart: (details) {
               setState(() {
                 _dragging = true;
@@ -245,7 +245,7 @@ class _TouchShutterState extends State<TouchShutter> {
             onHorizontalDragUpdate: (details) {
               delta = details.globalPosition.dx - dragStartPos;
               seekToPosition =
-                  (controller.value.position.inMilliseconds + delta * 1000)
+                  (controller!.value.position.inMilliseconds + delta * 1000)
                       .round();
               setState(() {
                 seekDuration = (delta < 0 ? "- " : "+ ") +
@@ -256,7 +256,7 @@ class _TouchShutterState extends State<TouchShutter> {
               });
             },
             onHorizontalDragEnd: (_) {
-              controller.seekTo(Duration(milliseconds: seekToPosition));
+              controller!.seekTo(Duration(milliseconds: seekToPosition));
               setState(() {
                 _dragging = false;
               });
@@ -289,24 +289,24 @@ class _TouchShutterState extends State<TouchShutter> {
           )
         : GestureDetector(
             onTap: () =>
-                widget.showControllers.value = !widget.showControllers.value,
+                widget.showControllers!.value = !widget.showControllers!.value,
           );
   }
 }
 
 class TopBar extends StatefulWidget {
-  final VideoControllerWrapper controllerWrapper;
-  final List<Widget> actions;
-  final ValueNotifier<bool> showControllers;
-  final Widget leading;
-  final NeekoPlayerOptions options;
-  final Function onPortraitBackTap;
-  final Function onLandscapeBackTap;
+  final VideoControllerWrapper? controllerWrapper;
+  final List<Widget>? actions;
+  final ValueNotifier<bool>? showControllers;
+  final Widget? leading;
+  final NeekoPlayerOptions? options;
+  final Function? onPortraitBackTap;
+  final Function? onLandscapeBackTap;
 
   final bool isFullscreen;
 
   const TopBar(this.controllerWrapper,
-      {Key key,
+      {Key? key,
       this.showControllers,
       this.actions,
       this.leading,
@@ -321,9 +321,9 @@ class TopBar extends StatefulWidget {
 }
 
 class _TopBarState extends State<TopBar> {
-  VideoControllerWrapper _controllerWrapper;
+  late VideoControllerWrapper _controllerWrapper;
 
-  VideoPlayerController get controller => _controllerWrapper.controller;
+  VideoPlayerController? get controller => _controllerWrapper.controller;
 
   set controllerWrapper(VideoControllerWrapper controllerWrapper) =>
       _controllerWrapper = controllerWrapper;
@@ -331,7 +331,7 @@ class _TopBarState extends State<TopBar> {
   @override
   void initState() {
     super.initState();
-    widget.showControllers.addListener(() {
+    widget.showControllers!.addListener(() {
       if (mounted) setState(() {});
     });
   }
@@ -339,7 +339,7 @@ class _TopBarState extends State<TopBar> {
   @override
   Widget build(BuildContext context) {
     return Visibility(
-      visible: widget.showControllers.value,
+      visible: widget.showControllers!.value,
       child: Padding(
         padding: EdgeInsets.only(
             left: 2.0, right: 2.0, top: MediaQuery.of(context).padding.top),
@@ -349,7 +349,7 @@ class _TopBarState extends State<TopBar> {
           children: <Widget>[
             Expanded(
               child: widget.leading != null
-                  ? widget.leading
+                  ? widget.leading!
                   : _buildLeading(context),
               flex: 7,
             ),
@@ -369,8 +369,8 @@ class _TopBarState extends State<TopBar> {
   Widget _buildLeading(BuildContext context) {
     final IconData back =
         Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back;
-    final title = widget.controllerWrapper.dataSource.displayName;
-    final subtitle = widget.controllerWrapper.dataSource.subtitle;
+    final title = widget.controllerWrapper!.dataSource!.displayName;
+    final subtitle = widget.controllerWrapper!.dataSource!.subtitle;
     final ThemeData themeData = Theme.of(context);
     return Align(
       alignment: Alignment.centerLeft,
@@ -379,10 +379,10 @@ class _TopBarState extends State<TopBar> {
           GestureDetector(
             onTap: () {
               if (widget.isFullscreen && widget.onLandscapeBackTap != null) {
-                widget.onLandscapeBackTap();
+                widget.onLandscapeBackTap!();
               } else if (!widget.isFullscreen &&
                   widget.onPortraitBackTap != null) {
-                widget.onPortraitBackTap();
+                widget.onPortraitBackTap!();
               }
             },
             child: Icon(
@@ -417,28 +417,28 @@ class _TopBarState extends State<TopBar> {
       maxLines: 1,
       softWrap: true,
       style:
-      themeData.textTheme.bodyText2.copyWith(color: Colors.white),
+      themeData.textTheme.bodyText2!.copyWith(color: Colors.white),
       overflow: TextOverflow.ellipsis,
     );
   }
 }
 
 class BottomBar extends StatefulWidget {
-  final VideoControllerWrapper controllerWrapper;
-  final Color playedColor;
-  final Color bufferedColor;
-  final Color handleColor;
-  final Color backgroundColor;
-  final double aspectRatio;
-  final ValueNotifier<bool> showControllers;
+  final VideoControllerWrapper? controllerWrapper;
+  final Color? playedColor;
+  final Color? bufferedColor;
+  final Color? handleColor;
+  final Color? backgroundColor;
+  final double? aspectRatio;
+  final ValueNotifier<bool>? showControllers;
 
   final bool isFullscreen;
 
-  final Function onEnterFullscreen;
-  final Function onExitFullscreen;
+  final Function? onEnterFullscreen;
+  final Function? onExitFullscreen;
 
   const BottomBar(this.controllerWrapper,
-      {Key key,
+      {Key? key,
       this.playedColor,
       this.bufferedColor,
       this.handleColor,
@@ -458,9 +458,9 @@ class _BottomBarState extends State<BottomBar> {
   int _currentPosition = 0;
   int _duration = 0;
 
-  VideoControllerWrapper _controllerWrapper;
+  VideoControllerWrapper? _controllerWrapper;
 
-  VideoPlayerController get controller => widget.controllerWrapper.controller;
+  VideoPlayerController? get controller => widget.controllerWrapper!.controller;
 
   set controllerWrapper(VideoControllerWrapper controllerWrapper) =>
       _controllerWrapper = controllerWrapper;
@@ -469,10 +469,10 @@ class _BottomBarState extends State<BottomBar> {
   void initState() {
     super.initState();
     _controllerWrapper = widget.controllerWrapper;
-    _controllerWrapper.addListener(() {
+    _controllerWrapper!.addListener(() {
       _attachListenerToController();
     });
-    widget.showControllers.addListener(
+    widget.showControllers!.addListener(
       () {
         if (mounted) setState(() {});
       },
@@ -484,17 +484,17 @@ class _BottomBarState extends State<BottomBar> {
   }
 
   _videoControllerListener() {
-    if (controller.value.duration == null ||
-        controller.value.position == null) {
+    if (controller!.value.duration == null ||
+        controller!.value.position == null) {
       return;
     }
 
     if (mounted) {
       setState(() {
-        _currentPosition = controller.value.duration.inMilliseconds == 0
+        _currentPosition = controller!.value.duration.inMilliseconds == 0
             ? 0
-            : controller.value.position.inMilliseconds;
-        _duration = controller.value.duration.inMilliseconds;
+            : controller!.value.position.inMilliseconds;
+        _duration = controller!.value.duration.inMilliseconds;
       });
     }
   }
@@ -509,7 +509,7 @@ class _BottomBarState extends State<BottomBar> {
     _attachListenerToController();
 
     return Visibility(
-      visible: widget.showControllers.value,
+      visible: widget.showControllers!.value,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -554,14 +554,14 @@ class _BottomBarState extends State<BottomBar> {
               color: Colors.white,
             ),
             onPressed: () {
-              if (controller == null || !controller.value.isInitialized) {
+              if (controller == null || !controller!.value.isInitialized) {
                 return;
               }
               if (widget.isFullscreen && widget.onExitFullscreen != null) {
-                widget.onExitFullscreen();
+                widget.onExitFullscreen!();
               } else if (!widget.isFullscreen &&
                   widget.onEnterFullscreen != null) {
-                widget.onEnterFullscreen();
+                widget.onEnterFullscreen!();
               }
             },
           ),
@@ -572,24 +572,24 @@ class _BottomBarState extends State<BottomBar> {
 }
 
 class LiveBottomBar extends StatefulWidget {
-  final VideoControllerWrapper controllerWrapper;
+  final VideoControllerWrapper? controllerWrapper;
 
-  final Color playedColor;
-  final Color bufferedColor;
-  final Color handleColor;
-  final Color backgroundColor;
-  final double aspectRatio;
-  final ValueNotifier<bool> showControllers;
+  final Color? playedColor;
+  final Color? bufferedColor;
+  final Color? handleColor;
+  final Color? backgroundColor;
+  final double? aspectRatio;
+  final ValueNotifier<bool>? showControllers;
 
-  final Color liveUIColor;
+  final Color? liveUIColor;
 
   final bool isFullscreen;
 
-  final Function onEnterFullscreen;
-  final Function onExitFullscreen;
+  final Function? onEnterFullscreen;
+  final Function? onExitFullscreen;
 
   const LiveBottomBar(this.controllerWrapper,
-      {Key key,
+      {Key? key,
       this.playedColor,
       this.bufferedColor,
       this.handleColor,
@@ -610,11 +610,11 @@ class _LiveBottomBarState extends State<LiveBottomBar> {
   int _currentPosition = 0;
   double _currentSliderPosition = 0.0;
 
-  VideoControllerWrapper _controllerWrapper;
+  VideoControllerWrapper? _controllerWrapper;
 
-  VideoPlayerController get controller => _controllerWrapper.controller;
+  VideoPlayerController? get controller => _controllerWrapper!.controller;
 
-  set controllerWrapper(VideoControllerWrapper controllerWrapper) =>
+  set controllerWrapper(VideoControllerWrapper? controllerWrapper) =>
       _controllerWrapper = controllerWrapper;
 
   @override
@@ -622,7 +622,7 @@ class _LiveBottomBarState extends State<LiveBottomBar> {
     super.initState();
     controllerWrapper = widget.controllerWrapper;
     _attachListenerToController();
-    widget.showControllers.addListener(
+    widget.showControllers!.addListener(
       () {
         if (mounted) setState(() {});
       },
@@ -630,17 +630,17 @@ class _LiveBottomBarState extends State<LiveBottomBar> {
   }
 
   _attachListenerToController() {
-    controller.addListener(
+    controller!.addListener(
       () {
-        if (controller.value.duration == null ||
-            controller.value.position == null) {
+        if (controller!.value.duration == null ||
+            controller!.value.position == null) {
           return;
         }
         if (mounted) {
           setState(() {
-            _currentPosition = controller.value.position.inMilliseconds;
-            _currentSliderPosition = controller.value.position.inMilliseconds /
-                controller.value.duration.inMilliseconds;
+            _currentPosition = controller!.value.position.inMilliseconds;
+            _currentSliderPosition = controller!.value.position.inMilliseconds /
+                controller!.value.duration.inMilliseconds;
           });
         }
       },
@@ -654,7 +654,7 @@ class _LiveBottomBarState extends State<LiveBottomBar> {
       _attachListenerToController();
     }
     return Visibility(
-      visible: widget.showControllers.value,
+      visible: widget.showControllers!.value,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -673,10 +673,10 @@ class _LiveBottomBarState extends State<LiveBottomBar> {
               child: Slider(
                 value: _currentSliderPosition,
                 onChanged: (value) {
-                  controller.seekTo(
+                  controller!.seekTo(
                     Duration(
                       milliseconds:
-                          (controller.value.duration.inMilliseconds * value)
+                          (controller!.value.duration.inMilliseconds * value)
                               .round(),
                     ),
                   );
@@ -690,7 +690,7 @@ class _LiveBottomBarState extends State<LiveBottomBar> {
             ),
           ),
           InkWell(
-            onTap: () => controller.seekTo(controller.value.duration),
+            onTap: () => controller!.seekTo(controller!.value.duration),
             child: Material(
               color: widget.liveUIColor,
               child: Text(
@@ -709,15 +709,15 @@ class _LiveBottomBarState extends State<LiveBottomBar> {
               color: Colors.white,
             ),
             onPressed: () {
-              if (controller == null || !controller.value.isInitialized) {
+              if (controller == null || !controller!.value.isInitialized) {
                 return;
               }
 
               if (widget.isFullscreen && widget.onExitFullscreen != null) {
-                widget.onExitFullscreen();
+                widget.onExitFullscreen!();
               } else if (!widget.isFullscreen &&
                   widget.onEnterFullscreen != null) {
-                widget.onEnterFullscreen();
+                widget.onEnterFullscreen!();
               }
             },
           ),
