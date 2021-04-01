@@ -30,9 +30,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-//  static const String beeUri = 'https://media.w3.org/2010/05/sintel/trailer.mp4';
+
   static const String beeUri =
-      'http://vfx.mtime.cn/Video/2019/03/09/mp4/190309153658147087.mp4';
+      'https://media.w3.org/2010/05/sintel/trailer.mp4';
 
   final VideoControllerWrapper videoControllerWrapper = VideoControllerWrapper(
       DataSource.network(
