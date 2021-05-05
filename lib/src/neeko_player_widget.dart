@@ -16,86 +16,57 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:neeko/src/progress_bar.dart';
 import 'package:video_player/video_player.dart';
 
+import 'base_player_widget.dart';
 import 'neeko_fullscreen_player.dart';
-import 'neeko_player.dart';
+import 'neeko_player_helper.dart';
 import 'neeko_player_options.dart';
-import 'video_controller_widgets.dart';
 import 'video_controller_wrapper.dart';
 
 ///core video player
-class NeekoPlayerWidget extends StatefulWidget {
-  final VideoControllerWrapper videoControllerWrapper;
-
-  final NeekoPlayerOptions playerOptions;
-
-  /// Defines the width of the player.
-  /// Default = Devices's Width
-  final double? width;
-
-  ///The duration for which controls in the player will be visible.
-  ///default 3 seconds
-  final Duration controllerTimeout;
-
-  /// Overrides the default buffering indicator for the player.
-  final Widget? bufferIndicator;
-
-  final Color liveUIColor;
-
-  /// Defines the aspect ratio to be assigned to the player. This property along with [width] calculates the player size.
-  /// Default = 16/9
-  final double aspectRatio;
-
-  /// Adds custom top bar widgets
-  final List<Widget>? actions;
-
-  /// Video starts playing from the duration provided.
-  final Duration startAt;
-
-  final bool inFullScreen;
-
-  /// Callback of back-button's onTap event  when the top controller is portrait
-  final Function? onPortraitBackTap;
-
-  /// When the skip previous button tapped
-  final Function? onSkipPrevious;
-
-  /// When the skip previous button tapped
-  final Function? onSkipNext;
-
-  final Color? progressBarPlayedColor;
-  final Color progressBarBufferedColor;
-  final Color? progressBarHandleColor;
-  final Color progressBarBackgroundColor;
-
-  /// Allow developers to indicate a custom tag (which is linked with its corresponding fullscreen)
-  final String tag;
+class NeekoPlayerWidget extends BasePlayerWidget {
 
   NeekoPlayerWidget(
       {Key? key,
-      required this.videoControllerWrapper,
-      this.playerOptions = const NeekoPlayerOptions(),
-      this.controllerTimeout = const Duration(seconds: 3),
-      this.bufferIndicator,
-      this.liveUIColor = Colors.red,
-      this.aspectRatio = 16 / 9,
-      this.width,
-      this.actions,
-      this.startAt = const Duration(seconds: 0),
-      this.inFullScreen = false,
-      this.onPortraitBackTap,
-      this.onSkipPrevious,
-      this.onSkipNext,
-      this.progressBarPlayedColor,
-      this.progressBarBufferedColor: const Color(0xFF757575),
-      this.progressBarHandleColor,
-      this.progressBarBackgroundColor: const Color(0xFFF5F5F5),
-      this.tag: "com.jarvanmo.neekoPlayerHeroTag"})
-      : assert(videoControllerWrapper != null),
-        assert(playerOptions != null),
-        super(key: key);
+        required videoControllerWrapper,
+        playerOptions = const NeekoPlayerOptions(),
+        controllerTimeout = const Duration(seconds: 3),
+        bufferIndicator,
+        liveUIColor = Colors.red,
+        aspectRatio = 16 / 9,
+        width,
+        actions,
+        startAt = const Duration(seconds: 0),
+        inFullScreen = false,
+        onPortraitBackTap,
+        onSkipPrevious,
+        onSkipNext,
+        progressBarPlayedColor,
+        progressBarBufferedColor: const Color(0xFF757575),
+        progressBarHandleColor,
+        progressBarBackgroundColor: const Color(0xFFF5F5F5),
+        tag: "com.jarvanmo.neekoPlayerHeroTag"})
+      : super(key: key,
+      videoControllerWrapper: videoControllerWrapper,
+      playerOptions: playerOptions,
+      controllerTimeout: controllerTimeout,
+      bufferIndicator: bufferIndicator,
+      liveUIColor: liveUIColor,
+      aspectRatio: aspectRatio,
+      width: width,
+      actions: actions,
+      startAt: startAt,
+      inFullScreen: inFullScreen,
+      onPortraitBackTap: onPortraitBackTap,
+      onSkipPrevious: onSkipPrevious,
+      onSkipNext: onSkipNext,
+      progressBarPlayedColor: progressBarPlayedColor,
+      progressBarBufferedColor: progressBarBufferedColor,
+      progressBarHandleColor: progressBarHandleColor,
+      progressBarBackgroundColor: progressBarBackgroundColor,
+      tag: tag
+  );
 
   @override
   _NeekoPlayerWidgetState createState() => _NeekoPlayerWidgetState();
@@ -107,9 +78,9 @@ class _NeekoPlayerWidgetState extends State<NeekoPlayerWidget> {
   Timer? _timer;
 
   VideoPlayerController? get controller =>
-      widget.videoControllerWrapper.controller;
+      widget.videoControllerWrapper?.controller;
 
-  VideoControllerWrapper get videoControllerWrapper =>
+  VideoControllerWrapper? get videoControllerWrapper =>
       widget.videoControllerWrapper;
 
   @override
@@ -123,7 +94,7 @@ class _NeekoPlayerWidgetState extends State<NeekoPlayerWidget> {
   }
 
   void _listenVideoControllerWrapper() {
-    videoControllerWrapper.addListener(() {
+    videoControllerWrapper?.addListener(() {
       if (mounted)
         setState(() {
 //          _addShowControllerListener();
@@ -151,7 +122,7 @@ class _NeekoPlayerWidgetState extends State<NeekoPlayerWidget> {
   }
 
   _configureVideoPlayer() {
-    if (widget.playerOptions.autoPlay) {
+    if (widget.playerOptions != null) {
       _autoPlay();
     }
 
@@ -159,17 +130,12 @@ class _NeekoPlayerWidgetState extends State<NeekoPlayerWidget> {
   }
 
   _autoPlay() async {
-    if (controller == null) {
+    if (controller == null || controller!.value.isPlaying) {
       return;
     }
 
-    if (controller!.value.isPlaying) {
-      return;
-    }
     if (controller!.value.isInitialized) {
-      if (widget.startAt != null) {
-        await controller!.seekTo(widget.startAt);
-      }
+      await controller!.seekTo(widget.startAt);
       controller!.play();
     }
   }
@@ -182,7 +148,7 @@ class _NeekoPlayerWidgetState extends State<NeekoPlayerWidget> {
 
 //    _showControllers.dispose();
     controller?.dispose();
-    videoControllerWrapper.dispose();
+    videoControllerWrapper?.dispose();
     _timer?.cancel();
     super.dispose();
   }
@@ -204,7 +170,7 @@ class _NeekoPlayerWidgetState extends State<NeekoPlayerWidget> {
         context: context,
         animation: animation,
         secondaryAnimation: secondaryAnimation,
-        videoControllerWrapper: widget.videoControllerWrapper,
+        videoControllerWrapper: widget.videoControllerWrapper ?? widget.videoControllerWrapper as VideoControllerWrapper,
         width: widget.width,
         actions: widget.actions,
         aspectRatio: widget.aspectRatio,
@@ -213,19 +179,19 @@ class _NeekoPlayerWidgetState extends State<NeekoPlayerWidget> {
         onSkipNext: widget.onSkipNext,
         controllerTimeout: widget.controllerTimeout,
         playerOptions: NeekoPlayerOptions(
-            enableDragSeek: widget.playerOptions.enableDragSeek,
-            showFullScreenButton: widget.playerOptions.showFullScreenButton,
+            enableDragSeek: widget.playerOptions?.enableDragSeek as bool,
+            showFullScreenButton: widget.playerOptions?.showFullScreenButton as bool,
             autoPlay: true,
-            useController: widget.playerOptions.useController,
-            isLive: widget.playerOptions.isLive,
+            useController: widget.playerOptions?.useController as bool,
+            isLive: widget.playerOptions?.isLive as bool,
             preferredOrientationsWhenEnterLandscape:
-                widget.playerOptions.preferredOrientationsWhenEnterLandscape,
+                widget.playerOptions?.preferredOrientationsWhenEnterLandscape ?? const [],
             preferredOrientationsWhenExitLandscape:
-                widget.playerOptions.preferredOrientationsWhenExitLandscape,
+                widget.playerOptions?.preferredOrientationsWhenExitLandscape ?? const [],
             enabledSystemUIOverlaysWhenEnterLandscape:
-                widget.playerOptions.enabledSystemUIOverlaysWhenEnterLandscape,
+                widget.playerOptions?.enabledSystemUIOverlaysWhenEnterLandscape ?? const [],
             enabledSystemUIOverlaysWhenExitLandscape:
-                widget.playerOptions.enabledSystemUIOverlaysWhenExitLandscape),
+                widget.playerOptions?.enabledSystemUIOverlaysWhenExitLandscape ?? const []),
         liveUIColor: widget.liveUIColor,
       ),
     );
@@ -250,104 +216,7 @@ class _NeekoPlayerWidgetState extends State<NeekoPlayerWidget> {
 //          MediaQuery.of(context).orientation == Orientation.landscape;
 //    }
 
-    return Hero(
-      tag: this.widget.tag,
-      child: Container(
-        width: widget.width ?? MediaQuery.of(context).size.width,
-        child: AspectRatio(
-          aspectRatio: widget.aspectRatio,
-          child: Stack(
-            fit: StackFit.expand,
-            clipBehavior: Clip.none,
-            children: <Widget>[
-              NeekoPlayer(controllerWrapper: videoControllerWrapper),
-              if (widget.playerOptions.useController)
-                TouchShutter(
-                  videoControllerWrapper,
-                  showControllers: _showControllers,
-                  enableDragSeek: widget.playerOptions.enableDragSeek,
-                ),
-              if (widget.playerOptions.useController)
-                Center(
-                  child: CenterControllerActionButtons(
-                    videoControllerWrapper,
-                    showControllers: _showControllers,
-                    isLive: widget.playerOptions.isLive,
-                    onSkipPrevious: widget.onSkipPrevious,
-                    onSkipNext: widget.onSkipNext,
-                    bufferIndicator: widget.bufferIndicator ??
-                        Container(
-                          width: 70.0,
-                          height: 70.0,
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation(Colors.white),
-                          ),
-                        ),
-                  ),
-                ),
-              if (widget.playerOptions.useController)
-                Positioned(
-                    left: 0,
-                    right: 0,
-                    top: 0,
-                    child: TopBar(
-                      videoControllerWrapper,
-                      showControllers: _showControllers,
-                      options: widget.playerOptions,
-                      actions: widget.actions,
-                      isFullscreen: false,
-                      onPortraitBackTap: widget.onPortraitBackTap,
-                    )),
-              if (widget.playerOptions.useController)
-                (!widget.playerOptions.isLive)
-                    ? Positioned(
-                        left: 0,
-                        right: 0,
-                        child: ProgressBar(
-                          videoControllerWrapper,
-                          showControllers: _showControllers,
-                          playedColor: widget.progressBarPlayedColor,
-                          handleColor: widget.progressBarHandleColor,
-                          backgroundColor: widget.progressBarBackgroundColor,
-                          bufferedColor: widget.progressBarBufferedColor,
-                        ),
-                        bottom: -27.9,
-                      )
-                    : Container(),
-              if (widget.playerOptions.useController)
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: widget.playerOptions.isLive
-                      ? LiveBottomBar(
-                          videoControllerWrapper,
-                          aspectRatio: widget.aspectRatio,
-                          liveUIColor: widget.liveUIColor,
-                          showControllers: _showControllers,
-                          playedColor: widget.progressBarPlayedColor,
-                          handleColor: widget.progressBarHandleColor,
-                          backgroundColor: widget.progressBarBackgroundColor,
-                          bufferedColor: widget.progressBarBufferedColor,
-                          isFullscreen: false,
-                          onEnterFullscreen: pushFullScreenWidget,
-                        )
-                      : BottomBar(
-                          videoControllerWrapper,
-                          aspectRatio: widget.aspectRatio,
-                          showControllers: _showControllers,
-                          playedColor: widget.progressBarPlayedColor,
-                          handleColor: widget.progressBarHandleColor,
-                          backgroundColor: widget.progressBarBackgroundColor,
-                          bufferedColor: widget.progressBarBufferedColor,
-                          isFullscreen: false,
-                          onEnterFullscreen: pushFullScreenWidget,
-                        ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
+    final helper = NeekoPlayerHelper(context);
+    return helper.buildHero(this, _showControllers);
   }
 }
