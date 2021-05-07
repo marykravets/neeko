@@ -176,13 +176,15 @@ class __FullscreenPlayerState extends State<_FullscreenPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    final helper = NeekoPlayerHelper(context);
-
     return Material(
       color: Colors.black,
       child: SafeArea(
         child: Center(
-          child: helper.buildHero(this, _showControllers),
+          child: PlayerUiWidget(
+              context:context,
+              state:this,
+              showControllers:_showControllers
+          ),
         ),
       ),
     );
