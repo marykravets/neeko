@@ -216,7 +216,10 @@ class _NeekoPlayerWidgetState extends State<NeekoPlayerWidget> {
 //          MediaQuery.of(context).orientation == Orientation.landscape;
 //    }
 
-    final helper = NeekoPlayerHelper(context);
-    return helper.buildHero(this, _showControllers);
+    return PlayerUiWidget(
+        context: context,
+        state: this,
+        showControllers: _showControllers
+    );
   }
 }
