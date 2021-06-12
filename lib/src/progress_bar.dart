@@ -165,13 +165,12 @@ class _ProgressBarPainter extends CustomPainter {
   final Paint? handlePaint;
   final Paint? backgroundPaint;
 
-  _ProgressBarPainter(
-      {this.playedPaint,
-      this.bufferedPaint,
-      this.handlePaint,
-      this.backgroundPaint,
-      this.value,
-      this.drawHandle});
+  _ProgressBarPainter({this.playedPaint,
+    this.bufferedPaint,
+    this.handlePaint,
+    this.backgroundPaint,
+    this.value,
+    this.drawHandle});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -190,24 +189,23 @@ class _ProgressBarPainter extends CustomPainter {
     if (!value!.isInitialized) {
       return;
     }
-    double playedPart = 0;
-    if (value!.duration != null) {
-      double playedPartPercent =
-          value!.position.inMilliseconds / value!.duration.inMilliseconds;
-      if (playedPartPercent.isNaN) playedPartPercent = 0;
-      playedPart =
-          playedPartPercent > 1 ? size.width : playedPartPercent * size.width;
+
+    double playedPartPercent =
+        value!.position.inMilliseconds / value!.duration.inMilliseconds;
+    if (playedPartPercent.isNaN) {
+      playedPartPercent = 0;
     }
+    final double playedPart =
+    playedPartPercent > 1 ? size.width : playedPartPercent * size.width;
 
     double totalBuffered = 0;
     value!.buffered.forEach((durationRange) {
       totalBuffered = totalBuffered + durationRange.end.inMilliseconds;
     });
 
-    double bufferedPercent = 0;
-    if (value!.duration != null) {
-      bufferedPercent = totalBuffered / value!.duration.inMilliseconds;
-      if (bufferedPercent.isNaN) bufferedPercent = 0;
+    double bufferedPercent = totalBuffered / value!.duration.inMilliseconds;
+    if (bufferedPercent.isNaN) {
+      bufferedPercent = 0;
     }
 
     final double end = bufferedPercent * size.width;

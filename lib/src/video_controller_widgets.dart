@@ -179,9 +179,7 @@ class _CenterControllerActionButtonsState
     if (_isPlaying) {
       controller!.pause();
     } else {
-      if (controller!.value.position == null) {
-        controller!.play();
-      } else if (controller!.value.position.inMilliseconds >=
+      if (controller!.value.position.inMilliseconds >=
           controller!.value.duration.inMilliseconds) {
         await controller!.seekTo(Duration(seconds: 0));
         await controller!.play();
@@ -484,11 +482,6 @@ class _BottomBarState extends State<BottomBar> {
   }
 
   _videoControllerListener() {
-    if (controller!.value.duration == null ||
-        controller!.value.position == null) {
-      return;
-    }
-
     if (mounted) {
       setState(() {
         _currentPosition = controller!.value.duration.inMilliseconds == 0
@@ -632,10 +625,6 @@ class _LiveBottomBarState extends State<LiveBottomBar> {
   _attachListenerToController() {
     controller!.addListener(
       () {
-        if (controller!.value.duration == null ||
-            controller!.value.position == null) {
-          return;
-        }
         if (mounted) {
           setState(() {
             _currentPosition = controller!.value.position.inMilliseconds;
